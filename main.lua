@@ -11,4 +11,4 @@ require('src/Player')
 
 print('server started!')
 
-local tst = SessionManager:new(UdpServerSocket:new('*', 6666)):run()
+local tst = SessionManager:new(UdpServerSocket:new('192.168.2.105', 6666)):run()

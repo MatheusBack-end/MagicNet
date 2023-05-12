@@ -44,15 +44,17 @@ function Binary:write_string(value, width)
         value = value .. " "
     end
     
+    --print(string.len(value))
+    
         
     va = {}
     value:gsub(".",function(c) table.insert(va,c) end)
     
-    str = " "
+    str = ""
     for i = 1, width, 1 do
         str = str .. struct.pack('<c', va[i])
     end
-    
+    --print(string.len(str))
     return str
 end
 

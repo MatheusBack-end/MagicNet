@@ -5,7 +5,9 @@ function CreateSessionPacket:new()
         buffer,
         id = 0x01,
         client_id,
-        x, y, z
+        player_name,
+        x, y, z,
+        rx, ry, rz
     }
     
     setmetatable(object, self)
@@ -15,11 +17,19 @@ function CreateSessionPacket:new()
 end
 
 function CreateSessionPacket:decode()
-    self.x = Binary:read_float(string.sub(self.buffer, 2, 6))
-    self.y = Binary:read_float(string.sub(self.buffer, 6, 10))
-    self.z = Binary:read_float(string.sub(self.buffer, 10, 14))
+    self.client_id = Binary:read_string(string.sub(self.buffer, 2, 12), 10)
+    --print(self.client_id)
+    self.player_name = Binary:read_string(string.sub(self.buffer, 12, 32), 20)
+    --print(self.player_name)
     
-    self.client_id = Binary:read_string(string.sub(self.buffer, 14), 10)
+    self.x = Binary:read_float(string.sub(self.buffer, 32, 36))
+    self.y = Binary:read_float(string.sub(self.buffer, 36, 40))
+    self.z = Binary:read_float(string.sub(self.buffer, 40, 44))
+    
+    self.rx = Binary:read_float(string.sub(self.buffer, 44, 48))
+    self.ry = Binary:read_float(string.sub(self.buffer, 48, 52))
+    self.rz = Binary:read_float(string.sub(self.buffer, 52, 55))
+    
 end
 
 function CreateSessionPacket:encode()

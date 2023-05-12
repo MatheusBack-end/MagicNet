@@ -1,12 +1,13 @@
 Player = {}
 
-function Player:new(ip, port, name, id)
+function Player:new(ip, port, name, id, x, y, z, rx, ry, rz)
     local object = {
         ip = ip,
         port = port,
         name = name,
         id = id,
-        x, y, z
+        x = x, y = y, z = z,
+        rx = rx, ry = ry, rz = rz
     }
     
     setmetatable(object, self)

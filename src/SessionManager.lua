@@ -25,7 +25,6 @@ function SessionManager:receive_packets()
                 local packet = PingPacket:new()
                 packet.players_count = count(self.players)
                 packet:encode()
-                
                 self.udp_server:send(ip, port, packet.buffer)
             end
             
@@ -41,8 +40,13 @@ function SessionManager:receive_packets()
                 packet.buffer = buffer
                 packet:decode()
                 
-                if self:get_player(packet.client_id) == nil then 
-                    self:create_player(packet.client_id, ip, port)
+                if self:get_player(packet.client_id) == nil then
+                    local pk = StartGamePacket:new()
+                    pk.players = self.players
+                    pk:encode()
+                    
+                    self.udp_server:send(ip, port, pk.buffer);
+                    self:create_player(packet.client_id, packet.player_name, packet.x, packet.y, packet.z, packet.rx, packet.ry, packet.rz, ip, port)
                     self:broadcast_less_sender(buffer, packet.client_id)
                 end
             end
@@ -82,8 +86,8 @@ function SessionManager:remove_player(client_id)
     print("player id " .. client_id .. " disconnected!")
 end
 
-function SessionManager:create_player(client_id, ip, port)
-    self.players[client_id] = Player:new(ip, port, client_id)
+function SessionManager:create_player(client_id, name, x, y, z, rx, ry, rz, ip, port)
+    self.players[client_id] = Player:new(ip, port, name, client_id, x, y, z, rx, ry, rz)
     print("player id " .. client_id .. " join in server!")
 end
 

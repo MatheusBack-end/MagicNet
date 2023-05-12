@@ -27,7 +27,12 @@ function StartGamePacket:encode()
         buffer = buffer .. Binary:write_float(player.x)
         buffer = buffer .. Binary:write_float(player.y)
         buffer = buffer .. Binary:write_float(player.z)
-	buffer = buffer .. Binary:write_string(player.name, 20)
+        
+        buffer = buffer .. Binary:write_float(player.rx)
+        buffer = buffer .. Binary:write_float(player.ry)
+        buffer = buffer .. Binary:write_float(player.rz)
+        buffer = buffer .. Binary:write_string(player.id, 10)
+        buffer = buffer .. Binary:write_string(player.name, 20)
     end
     
     self.buffer = buffer

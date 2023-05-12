@@ -5,7 +5,8 @@ function UpdatePositionPacket:new()
         buffer,
         id = 0x02,
         client_id,
-        x, y, z
+        x, y, z,
+        rx, ry, rz
     }
     
     setmetatable(object, self)
@@ -19,7 +20,11 @@ function UpdatePositionPacket:decode()
     self.y = Binary:read_float(string.sub(self.buffer, 6, 10))
     self.z = Binary:read_float(string.sub(self.buffer, 10, 14))
     
-    self.client_id = Binary:read_string(string.sub(self.buffer, 14), 10)
+    self.rx = Binary:read_float(string.sub(self.buffer, 14, 18))
+    self.ry = Binary:read_float(string.sub(self.buffer, 18, 22))
+    self.rz = Binary:read_float(string.sub(self.buffer, 22, 26))
+    
+    self.client_id = Binary:read_string(string.sub(self.buffer, 26), 10)
 end
 
 function UpdatePositionPacket:encode()
