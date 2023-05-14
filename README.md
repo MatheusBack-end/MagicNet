@@ -1,5 +1,23 @@
 # RaknetServerLua
 
-<h1> ip, port </h1>
+# Setup
 
-ip example ```192.168.2.105```
+```
+git clone https://github.com/iMatthhzCode/RaknetServerLua
+```
+
+```
+pkg install lua51;
+pkg install luarocks;
+pkg install clang
+```
+
+```
+luarocks install luasocket;
+luarocks install struct;
+```
+
+```
+cd RaknetServerLua;
+lua main.lua
+```
