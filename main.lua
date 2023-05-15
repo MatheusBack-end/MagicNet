@@ -9,6 +9,13 @@ require('src/packets/UpdatePositionPacket')
 require('src/SessionManager')
 require('src/Player')
 
+local yaml = require('lyaml')
+local conf = io.open("conf.yaml", "r"):read("*all")
+local parse = yaml.load(conf, { all = true })
+
 print('server started!')
 
-local tst = SessionManager:new(UdpServerSocket:new('192.168.2.105', 6666)):run()
+local ip = parse[1].host
+local port = tonumber(parse[1].port)
+
+local tst = SessionManager:new(UdpServerSocket:new(ip, port)):run()
