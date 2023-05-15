@@ -9,7 +9,8 @@ git clone https://github.com/iMatthhzCode/RaknetServerLua
 ```
 pkg install lua51;
 pkg install luarocks;
-pkg install clang
+pkg install lyaml;
+pkg install clang;
 ```
 
 ```
