@@ -16,7 +16,7 @@ pkg install clang;
 ```
 luarocks install luasocket;
 luarocks install struct;
-lurocks install lyaml;
+luarocks install lyaml;
 ```
 
 ```
