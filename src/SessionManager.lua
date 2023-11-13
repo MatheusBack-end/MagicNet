@@ -1,14 +1,14 @@
 SessionManager = {}
 
 function SessionManager:new(udp_server)
-   object = {
+   local object = {
        udp_server = udp_server,
        players = {}
    }
-   
+
    setmetatable(object, self)
    self.__index = self
-   
+
    return object
 end
 
@@ -34,7 +34,24 @@ function SessionManager:receive_packets()
                 packet:decode();
                 self:broadcast_less_sender(buffer, packet.client_id)
             end
+
+            if pid == 0x09 then
+              local packet = HitPacket:new()
+              packet.buffer = buffer
+              packet:decode()
+
+              self:broadcast_less_sender(buffer, packet.damager_id)
+              print(packet.damager_id .. " hit caralho!!! " .. packet.client_id)
+            end
             
+            if pid == 0x03 then
+              local packet = SoundPacket:new()
+              packet.buffer = buffer;
+              packet:decode()
+              --io.write(packet.client_id .. "\n");
+              self:broadcast_less_sender(buffer, packet.client_id)
+            end
+
             if pid == 0x01 then
                 local packet = CreateSessionPacket:new()
                 packet.buffer = buffer
@@ -76,7 +93,7 @@ end
 function SessionManager:broadcast_less_sender(buffer, sender_id)
     for key, value in pairs(self.players) do
         if key ~= sender_id then
-            self.udp_server:send(self.players[key].ip, self.players[key].port, buffer)
+          self.udp_server:send(self.players[key].ip, self.players[key].port, buffer)
         end
     end
 end

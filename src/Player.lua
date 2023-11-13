@@ -6,6 +6,7 @@ function Player:new(ip, port, name, id, x, y, z, rx, ry, rz)
         port = port,
         name = name,
         id = id,
+        life = 100,
         x = x, y = y, z = z,
         rx = rx, ry = ry, rz = rz
     }

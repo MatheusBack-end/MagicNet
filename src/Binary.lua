@@ -6,8 +6,8 @@ Binary = {}
 
 -- class construct
 function Binary:new()
-    object = {}
-    
+    local object = {}
+
     setmetatable(object, self)
     self.__index = self
     
@@ -15,11 +15,27 @@ function Binary:new()
 end
 
 function Binary:read_int(value) -- bytes[]
-    
+   return struct.unpack('<i', value)
 end
 
 function Binary:write_int(value) -- int
     return struct.pack('<i', value) -- byte[4]
+end
+
+function Binary:write_char(value)
+  return struct.pack('<c', value)
+end
+
+function Binary:read_char(value)
+  return struct.unpack('<c', value)
+end
+
+function Binary:read_short(value)
+  return struct.unpack('<h', value)
+end
+
+function Binary:write_short(value)
+  return struct.pack('<h', value)
 end
 
 function Binary:read_float(value) -- bytes[]
