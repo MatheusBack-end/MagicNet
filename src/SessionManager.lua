@@ -14,25 +14,25 @@ end
 
 function SessionManager:receive_packets()
     while true do
-        local buffer = self.udp_server:receive()
-        local ip = buffer[2]
-        local port = buffer[3]
-        buffer = buffer [1]
-        local pid = Binary:read_byte(string.sub(buffer, 1, 2))
+        local client = self.udp_server:receive()
+        local buffer = ByteBuffer:new()
+        buffer.put(client.data)
+
+        local pid = buffer.get_byte()
 
         if buffer then
             if pid == 0x0 then
                 local packet = PingPacket:new()
                 packet.players_count = count(self.players)
                 packet:encode()
-                self.udp_server:send(ip, port, packet.buffer)
+                self.udp_server:send(client.ip, client.port, client.packet.buffer)
             end
             
             if pid == 0x02 then
                 local packet = UpdatePositionPacket:new()
                 packet.buffer = buffer
                 packet:decode();
-                self:broadcast_less_sender(buffer, packet.client_id)
+                self:broadcast_less_sender(client.data, packet.client_id)
             end
 
             if pid == 0x09 then
@@ -49,7 +49,7 @@ function SessionManager:receive_packets()
               packet.buffer = buffer;
               packet:decode()
               --io.write(packet.client_id .. "\n");
-              self:broadcast_less_sender(buffer, packet.client_id)
+              self:broadcast_less_sender(client.data, packet.client_id)
             end
 
             if pid == 0x01 then

@@ -37,6 +37,6 @@ function UdpServerSocket:send(ip, port, packet) -- string, int, table type Packe
 end
 
 function UdpServerSocket:receive()
-    local buffer = { udp:receivefrom() }
-    return buffer -- table {ip, port, buffer}
+    local ip, port, data = udp:receivefrom()
+    return ClientReceiver:new(ip, port, data)
 end
