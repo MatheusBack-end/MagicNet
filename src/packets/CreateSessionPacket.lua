@@ -17,14 +17,10 @@ function CreateSessionPacket:new()
 end
 
 function CreateSessionPacket:decode()
-  local buffer = ByteBuffer:new()
-  buffer:put(self.buffer)
-
-  buffer:get_byte() -- packet id
-  self.client_id = buffer:get_string()
-  self.player_name = buffer:get_string()
-  self.position = buffer:get_vec3()
-  self.rotation = buffer:get_vec3()
+  self.client_id = self.buffer:get_string()
+  self.player_name = self.buffer:get_string()
+  self.position = self.buffer:get_vec3()
+  self.rotation = self.buffer:get_vec3()
 end
 
 function CreateSessionPacket:encode()

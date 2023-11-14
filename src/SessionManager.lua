@@ -1,87 +1,89 @@
 SessionManager = {}
 
 function SessionManager:new(udp_server)
-   local object = {
-       udp_server = udp_server,
-       players = {}
-   }
+  local object =
+  {
+    udp_server = udp_server,
+    players = {}
+  }
 
-   setmetatable(object, self)
-   self.__index = self
+  setmetatable(object, self)
+  self.__index = self
 
-   return object
+  return object
 end
 
 function SessionManager:receive_packets()
-    while true do
-        local client = self.udp_server:receive()
-        local buffer = ByteBuffer:new()
-        buffer.put(client.data)
+  while true do
+    local client = self.udp_server:receive()
 
-        local pid = buffer.get_byte()
-
-        if buffer then
-            if pid == 0x0 then
-                local packet = PingPacket:new()
-                packet.players_count = count(self.players)
-                packet:encode()
-                self.udp_server:send(client.ip, client.port, client.packet.buffer)
-            end
-            
-            if pid == 0x02 then
-                local packet = UpdatePositionPacket:new()
-                packet.buffer = buffer
-                packet:decode();
-                self:broadcast_less_sender(client.data, packet.client_id)
-            end
-
-            if pid == 0x09 then
-              local packet = HitPacket:new()
-              packet.buffer = buffer
-              packet:decode()
-
-              self:broadcast_less_sender(buffer, packet.damager_id)
-              print(packet.damager_id .. " hit caralho!!! " .. packet.client_id)
-            end
-            
-            if pid == 0x03 then
-              local packet = SoundPacket:new()
-              packet.buffer = buffer;
-              packet:decode()
-              --io.write(packet.client_id .. "\n");
-              self:broadcast_less_sender(client.data, packet.client_id)
-            end
-
-            if pid == 0x01 then
-                local packet = CreateSessionPacket:new()
-                packet.buffer = buffer
-                packet:decode()
-                
-                if self:get_player(packet.client_id) == nil then
-                    local pk = StartGamePacket:new()
-                    pk.players = self.players
-                    pk:encode()
-                    
-                    self.udp_server:send(ip, port, pk.buffer);
-                    self:create_player(packet.client_id, packet.player_name, packet.x, packet.y, packet.z, packet.rx, packet.ry, packet.rz, ip, port)
-                    self:broadcast_less_sender(buffer, packet.client_id)
-                end
-            end
-            
-            if pid == 0x05 then
-                local packet = close_session_packet:new()
-                packet.buffer = buffer
-                packet:decode()
-                
-                if self:get_player(packet.client_id) then
-                    self:remove_player(packet.client_id)
-                    self:broadcast(buffer)
-                end
-            end
-            
-        end
-       
+    if client.data == nil then
+      io.write("[error] client data is nil")
+      break
     end
+
+    local buffer = ByteBuffer:new()
+    buffer:put(client.data)
+
+    local pid = buffer:get_byte()
+
+    if pid == 0x0 then
+      local packet = PingPacket:new()
+      packet.players_count = count(self.players)
+      packet:encode()
+      self.udp_server:send(client.ip, client.port, packet.buffer)
+    end
+
+    if pid == 0x02 then
+      local packet = UpdatePositionPacket:new()
+      packet.buffer = client.data
+      packet:decode();
+      self:broadcast_less_sender(client.data, packet.client_id)
+    end
+
+    if pid == 0x09 then
+      local packet = HitPacket:new()
+      packet.buffer = client.data
+      packet:decode()
+
+      self:broadcast_less_sender(client.data, packet.damager_id)
+      print(packet.damager_id .. " hit caralho!!! " .. packet.client_id)
+    end
+
+    if pid == 0x03 then
+      local packet = SoundPacket:new()
+      packet.buffer = client.buffer;
+      packet:decode()
+      self:broadcast_less_sender(client.data, packet.client_id)
+    end
+
+    if pid == 0x01 then
+      local packet = CreateSessionPacket:new()
+      packet.buffer = buffer
+      packet:decode()
+
+      if self:get_player(packet.client_id) == nil then
+        local pk = StartGamePacket:new()
+        pk.players = self.players
+        pk:encode()
+
+        self.udp_server:send(client.ip, client.port, pk.buffer)
+        self:create_player(packet.client_id, packet.player_name, packet.x, packet.y, packet.z, packet.rx, packet.ry, packet.rz, ip, port)
+        self:broadcast_less_sender(client.data, packet.client_id)
+      end
+    end
+
+    if pid == 0x05 then
+      local packet = close_session_packet:new()
+      packet.buffer = client.data
+      packet:decode()
+
+      if self:get_player(packet.client_id) then
+        self:remove_player(packet.client_id)
+        self:broadcast(client.data)
+      end
+    end
+  end
 end
 
 function SessionManager:broadcast(buffer)

@@ -20,7 +20,8 @@ local yaml = require('lyaml')
 local conf = io.open("conf.yaml", "r"):read("*all")
 local parse = yaml.load(conf, { all = true })
 
-print('server started!')
+local log = '[' .. os.date('%I:%M:%S %p') .. ']' .. '[info] '
+print(log .. 'server started!')
 
 local ip = parse[1].host
 local port = tonumber(parse[1].port)
