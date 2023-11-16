@@ -1,8 +1,11 @@
+require('src/utils/Log')
 require('src/Binary')
 require('src/Node')
 require('src/LinkedList')
 require('src/ByteBuffer')
 require('src/Vector3')
+require('src/ThreadsManager')
+require('src/Console')
 require('src/ClientReceiver')
 require('src/UdpServerSocket')
 require('src/packets/Packet')
@@ -21,9 +24,13 @@ local conf = io.open("conf.yaml", "r"):read("*all")
 local parse = yaml.load(conf, { all = true })
 
 local log = '[' .. os.date('%I:%M:%S %p') .. ']' .. '[info] '
-print(log .. 'server started!')
+--print(log .. 'server started!')
+Log:info("server started!!")
 
 local ip = parse[1].host
 local port = tonumber(parse[1].port)
 
-local tst = SessionManager:new(UdpServerSocket:new(ip, port)):run()
+local thread_manager = ThreadsManager:new()
+local tst = SessionManager:new(UdpServerSocket:new(ip, port), thread_manager):run()
+Console:new(thread_manager):run()
+thread_manager:run()

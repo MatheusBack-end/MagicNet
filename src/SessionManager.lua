@@ -1,9 +1,10 @@
 SessionManager = {}
 
-function SessionManager:new(udp_server)
+function SessionManager:new(udp_server, thread_manager)
   local object =
   {
     udp_server = udp_server,
+    thread_manager = thread_manager,
     players = {}
   }
 
@@ -14,13 +15,14 @@ function SessionManager:new(udp_server)
 end
 
 function SessionManager:receive_packets()
-  while true do
+
     local client = self.udp_server:receive()
 
     if client.data == nil then
-      io.write("[error] client data is nil")
-      break
+      return
     end
+
+  Log:info("recebendo pacotes..")
 
     local buffer = ByteBuffer:new()
     buffer:put(client.data)
@@ -83,43 +85,50 @@ function SessionManager:receive_packets()
         self:broadcast(client.data)
       end
     end
-  end
+  --end
 end
 
 function SessionManager:broadcast(buffer)
-    for key, value in pairs(self.players) do
-        self.udp_server:send(self.players[key].ip, self.players[key].port, buffer)
-    end
+  for key, value in pairs(self.players) do
+    self.udp_server:send(self.players[key].ip, self.players[key].port, buffer)
+  end
 end
 
 function SessionManager:broadcast_less_sender(buffer, sender_id)
-    for key, value in pairs(self.players) do
-        if key ~= sender_id then
-          self.udp_server:send(self.players[key].ip, self.players[key].port, buffer)
-        end
+  for key, value in pairs(self.players) do
+    if key ~= sender_id then
+      self.udp_server:send(self.players[key].ip, self.players[key].port, buffer)
     end
+  end
 end
 
 function SessionManager:remove_player(client_id)
-    self.players[client_id] = nil
-    print("player id " .. client_id .. " disconnected!")
+  self.players[client_id] = nil
+  Log:info("player id" .. client_id .. " disconnected!")
 end
 
 function SessionManager:create_player(client_id, name, x, y, z, rx, ry, rz, ip, port)
-    self.players[client_id] = Player:new(ip, port, name, client_id, x, y, z, rx, ry, rz)
-    print("player id " .. client_id .. " join in server!")
+  self.players[client_id] = Player:new(ip, port, name, client_id, x, y, z, rx, ry, rz)
+  Log:info("player id " .. client_id .. " join in server!")
 end
 
 function SessionManager:get_player(client_id)
-    return self.players[client_id]
+  return self.players[client_id]
 end
 
 function SessionManager:run()
-    self:receive_packets()
+  local co = coroutine.create(function ()
+    while true do
+      self:receive_packets()
+      coroutine.yield()
+    end
+  end)
+
+  self.thread_manager:add(co)
 end
 
 function count(table)
-    local size = 0
-    for _ in pairs(table) do size = size + 1 end
-    return size
+  local size = 0
+  for _ in pairs(table) do size = size + 1 end
+  return size
 end

@@ -24,6 +24,7 @@ end
 
 function UdpServerSocket:open_server(ip, port)
   udp:setsockname(ip, port)
+  udp:settimeout(0)
 end
 
 function UdpServerSocket:send(ip, port, packet)
