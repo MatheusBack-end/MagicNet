@@ -1,9 +1,10 @@
 Console = {}
 
-function Console:new(threads_manager)
+function Console:new(threads_manager, session_manager)
   local object =
   {
     threads_manager = threads_manager,
+    session_manager = session_manager
   }
 
   setmetatable(object, self)
@@ -21,6 +22,10 @@ function Console:read_terminal()
     if input == "stop" then
       Log:info("server stopped!!")
       os.exit(1)
+    end
+
+    if input == "list" then
+      Log:info(count(self.session_manager.players) .. " players")
     end
   end
 end

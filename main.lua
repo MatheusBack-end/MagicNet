@@ -32,6 +32,7 @@ local ip = parse[1].host
 local port = tonumber(parse[1].port)
 
 local thread_manager = ThreadsManager:new()
-local tst = SessionManager:new(UdpServerSocket:new(ip, port), thread_manager):run()
-Console:new(thread_manager):run()
+local session_manager = SessionManager:new(UdpServerSocket:new(ip, port), thread_manager)
+session_manager:run()
+Console:new(thread_manager, session_manager):run()
 thread_manager:run()
