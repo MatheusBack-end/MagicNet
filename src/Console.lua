@@ -25,7 +25,7 @@ function Console:read_terminal()
     end
 
     if input == "list" then
-      Log:info(count(self.session_manager.players) .. " players")
+      Log:info(Server:get_players_amount() .. " players")
     end
   end
 end

@@ -1,6 +1,7 @@
 require('ioutil')
 require('src/utils/Log')
 require('src/Binary')
+require('src/Server')
 require('src/Node')
 require('src/LinkedList')
 require('src/ByteBuffer')

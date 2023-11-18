@@ -29,33 +29,10 @@ function SessionManager:receive_packets()
 
   if pid == 0x0 then
     local packet = PingPacket:new()
-    packet.players_amount = count(self.players)
+    packet.players_amount = Server:get_players_amount()
     packet:encode()
 
     self.udp_server:send(client.ip, client.port, packet.buffer:get())
-  end
-
-  if pid == 0x02 then
-    local packet = UpdatePositionPacket:new()
-    packet.buffer = client.data
-    packet:decode();
-    self:broadcast_less_sender(client.data, packet.client_id)
-  end
-
-  if pid == 0x09 then
-    local packet = HitPacket:new()
-    packet.buffer = client.data
-    packet:decode()
-
-    self:broadcast_less_sender(client.data, packet.damager_id)
-    print(packet.damager_id .. " hit caralho!!! " .. packet.client_id)
-  end
-
-  if pid == 0x03 then
-    local packet = SoundPacket:new()
-    packet.buffer = client.buffer;
-    packet:decode()
-    self:broadcast_less_sender(client.data, packet.client_id)
   end
 
   if pid == 0x01 then
@@ -68,10 +45,24 @@ function SessionManager:receive_packets()
       pk.players = self.players
       pk:encode()
 
-      self.udp_server:send(client.ip, client.port, pk.buffer)
-      self:create_player(packet.client_id, packet.player_name, packet.x, packet.y, packet.z, packet.rx, packet.ry, packet.rz, ip, port)
+      self.udp_server:send(client.ip, client.port, pk.buffer:get())
+      self:create_player(packet.client_id, packet.player_name, packet.position, packet.rotation, client.ip, client.port)
       self:broadcast_less_sender(client.data, packet.client_id)
     end
+  end
+
+  if pid == 0x02 then
+    local packet = UpdatePositionPacket:new()
+    packet.buffer = client.data
+    packet:decode();
+    self:broadcast_less_sender(client.data, packet.client_id)
+  end
+
+  if pid == 0x03 then
+    local packet = SoundPacket:new()
+    packet.buffer = client.buffer;
+    packet:decode()
+    self:broadcast_less_sender(client.data, packet.client_id)
   end
 
   if pid == 0x05 then
@@ -83,6 +74,15 @@ function SessionManager:receive_packets()
       self:remove_player(packet.client_id)
       self:broadcast(client.data)
     end
+  end
+
+  if pid == 0x09 then
+    local packet = HitPacket:new()
+    packet.buffer = client.data
+    packet:decode()
+
+    self:broadcast_less_sender(client.data, packet.damager_id)
+    print(packet.damager_id .. " hit caralho!!! " .. packet.client_id)
   end
 end
 
@@ -103,11 +103,13 @@ end
 function SessionManager:remove_player(client_id)
   self.players[client_id] = nil
   Log:info("player id" .. client_id .. " disconnected!")
+  Server:remove_player()
 end
 
-function SessionManager:create_player(client_id, name, x, y, z, rx, ry, rz, ip, port)
-  self.players[client_id] = Player:new(ip, port, name, client_id, x, y, z, rx, ry, rz)
+function SessionManager:create_player(client_id, name, position, rotation, ip, port)
+  self.players[client_id] = Player:new(ip, port, name, client_id, position, rotation)
   Log:info("player id " .. client_id .. " join in server!")
+  Server:add_player()
 end
 
 function SessionManager:get_player(client_id)

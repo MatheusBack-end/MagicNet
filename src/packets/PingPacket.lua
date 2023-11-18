@@ -15,7 +15,7 @@ end
 
 function PingPacket:encode()
   local buffer = ByteBuffer:new()
-  buffer:put_byte(0)
+  buffer:put_byte(0x0)
   buffer:put_int(self.players_amount)
 
   self.buffer = buffer
