@@ -1,19 +1,19 @@
 CreateSessionPacket = {}
 
 function CreateSessionPacket:new()
-    local object = {
-        buffer = nil,
-        id = 0x01,
-        client_id = nil,
-        player_name = nil,
-        position = nil,
-        rotation = nil
-    }
+  local object =
+  {
+    buffer = nil,
+    client_id = nil,
+    player_name = nil,
+    position = nil,
+    rotation = nil
+  }
 
-    setmetatable(object, self)
-    self.__index = self
+  setmetatable(object, self)
+  self.__index = self
 
-    return object
+  return object
 end
 
 function CreateSessionPacket:decode()
@@ -26,7 +26,7 @@ end
 function CreateSessionPacket:encode()
   local buffer = ByteBuffer:new()
 
-  buffer:put_byte(self.id)
+  buffer:put_byte(0x01)
   buffer:put_string(self.client_id)
   buffer:put_string(self.player_name)
   buffer:put_vec3(self.position)

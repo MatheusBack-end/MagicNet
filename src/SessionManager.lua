@@ -6,7 +6,8 @@ function SessionManager:new(udp_server, thread_manager)
     udp_server = udp_server,
     thread_manager = thread_manager,
     players = {},
-    players_amount = 0
+    players_amount = 0,
+    tick_per_seconds = 20
   }
 
   setmetatable(object, self)
@@ -55,6 +56,7 @@ function SessionManager:receive_packets()
     local packet = UpdatePositionPacket:new()
     packet.buffer = client.data
     packet:decode();
+
     self:broadcast_less_sender(client.data, packet.client_id)
   end
 

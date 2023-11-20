@@ -3,7 +3,6 @@ HitPacket = {}
 function HitPacket:new()
   local object = {
     buffer = nil,
-    id = 0x9,
     client_id = nil,
     damager_id = nil
   }
@@ -15,10 +14,9 @@ function HitPacket:new()
 end
 
 function HitPacket:decode()
-  self.damager_id = Binary:read_string(string.sub(self.buffer, 12), 10)
-  self.client_id = Binary:read_string(string.sub(self.buffer, 2), 10)
+  self.damager_id = self.buffer:get_string()
+  self.client_id = self.buffer:get_string()
 end
 
 function HitPacket:encode()
-  --
 end

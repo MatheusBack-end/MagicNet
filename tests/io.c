@@ -5,12 +5,12 @@
 
 int read_non_blocking(lua_State *L)
 {
-  char buffer[3];
+  char buffer[10];
 
   memset(buffer, 0, sizeof(buffer));
 
   fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
-  int ready = read(0, buffer, 3);
+  int ready = read(0, buffer, 10);
 
   if(ready > 0)
   {
