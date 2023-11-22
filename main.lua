@@ -1,4 +1,4 @@
-require('ioutil')
+require('luacio')
 require('src/utils/Log')
 require('src/Binary')
 require('src/Server')

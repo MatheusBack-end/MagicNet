@@ -1,3 +1,5 @@
+require("luacio")
+
 Console = {}
 
 function Console:new(threads_manager, session_manager)
@@ -14,7 +16,7 @@ function Console:new(threads_manager, session_manager)
 end
 
 function Console:read_terminal()
-  local input = ioutil.read_nb()
+  local input = luacio.read_nb(10)
 
   if input then
     input = input:gsub("\n", "")
