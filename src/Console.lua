@@ -28,7 +28,10 @@ function Console:read_terminal()
 
     if input == "list" then
       Log:info(Server:get_players_amount() .. " players")
+      return nil
     end
+
+    Log:info("command not found =[")
   end
 end
 

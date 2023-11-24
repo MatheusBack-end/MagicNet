@@ -1,6 +1,6 @@
 Vector3 = {}
 
-function Vector3:new(--[[optional]]x, y, z)
+function Vector3:new(x, y, z)
   local object =
   {
     x = x,

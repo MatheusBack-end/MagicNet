@@ -13,6 +13,10 @@ function Log:error(value)
   os.exit(-1)
 end
 
+function Log:warn(value)
+  io.write(get_header('warn') .. value .. "\n")
+end
+
 function Log:debug(value)
   io.write(get_header('debug') .. value .. "\n")
 end
