@@ -26,12 +26,18 @@ function Console:read_terminal()
       os.exit(1)
     end
 
+    if input == "clear" then
+      os.execute("clear")
+      Log:info("terminal has ben clear!!")
+      return nil
+    end
+
     if input == "list" then
       Log:info(Server:get_players_amount() .. " players")
       return nil
     end
 
-    Log:info("command not found =[")
+    Log:warn("command not found =[")
   end
 end
 
