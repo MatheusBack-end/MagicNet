@@ -6,7 +6,10 @@ function Console:new(threads_manager, session_manager)
   local object =
   {
     threads_manager = threads_manager,
-    session_manager = session_manager
+    session_manager = session_manager,
+    timer = 0,
+    previous_time = 0,
+    is_end = false
   }
 
   setmetatable(object, self)

@@ -92,8 +92,13 @@ function ByteBuffer:get(amount)
 
   local data = ""
 
+  if amount == 0 then
+    return data
+  end
+
   for i = 1, amount, 1 do
     local byte = self.buffer:get_last()
+
     data = data .. byte
   end
 

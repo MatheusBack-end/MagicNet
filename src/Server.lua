@@ -13,3 +13,7 @@ end
 function Server:get_players_amount()
   return players_amount
 end
+
+function Server:die_player(player)
+  Log:info("player name: " .. player.name .. " died!")
+end

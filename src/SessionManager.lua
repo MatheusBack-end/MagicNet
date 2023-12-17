@@ -49,26 +49,22 @@ function SessionManager:receive_packets()
       self:create_player(packet.client_id, packet.player_name, packet.position, packet.rotation, client.ip, client.port)
       self:broadcast_less_sender(client.data, packet.client_id)
     end
+
+    self:update_health_ping(packet.client_id)
   end
 
   if pid == 0x02 then
     local packet = UpdatePositionPacket:new()
-    packet.buffer = client.data
-    packet:decode();
-
-    self:broadcast_less_sender(client.data, packet.client_id)
-  end
-
-  if pid == 0x03 then
-    local packet = SoundPacket:new()
-    packet.buffer = client.buffer;
+    packet.buffer = buffer
     packet:decode()
+
     self:broadcast_less_sender(client.data, packet.client_id)
+    self:update_health_ping(packet.client_id)
   end
 
   if pid == 0x05 then
     local packet = close_session_packet:new()
-    packet.buffer = client.data
+    packet.buffer = buffer
     packet:decode()
 
     if self:get_player(packet.client_id) then
@@ -84,6 +80,7 @@ function SessionManager:receive_packets()
 
     self:broadcast_less_sender(client.data, packet.damager_id)
     print(packet.damager_id .. " hit caralho!!! " .. packet.client_id)
+    self:update_health_ping(packet.damager_id)
   end
 end
 
@@ -117,10 +114,28 @@ function SessionManager:get_player(client_id)
   return self.players[client_id]
 end
 
+function SessionManager:get_diff(last_ping)
+  return os.clock() - last_ping
+end
+
+function SessionManager:update_health_ping(client_id)
+  self:get_player(client_id).last_ping = os.clock()
+end
+
+function SessionManager:timeout_players()
+  for key, value in pairs(self.players) do
+    if self:get_diff(value.last_ping) > 5 then
+      Log:info("player: " .. value.name .. " has ben disconnected! [timeout]")
+      self:remove_player(value.client_id)
+    end
+  end
+end
+
 function SessionManager:run()
   local co = coroutine.create(function ()
     while true do
       self:receive_packets()
+      self:timeout_players()
       coroutine.yield()
     end
   end)
