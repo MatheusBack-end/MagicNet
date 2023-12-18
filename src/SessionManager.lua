@@ -68,7 +68,7 @@ function SessionManager:receive_packets()
     packet:decode()
 
     if self:get_player(packet.client_id) then
-      self:remove_player(packet.client_id)
+      self:remove_player(packet.client_id, "close")
       self:broadcast(client.data)
     end
   end
@@ -98,9 +98,9 @@ function SessionManager:broadcast_less_sender(buffer, sender_id)
   end
 end
 
-function SessionManager:remove_player(client_id)
+function SessionManager:remove_player(client_id, reason)
   self.players[client_id] = nil
-  Log:info("player id" .. client_id .. " disconnected!")
+  Log:info("player id" .. client_id .. " disconnected! " .. "[" .. reason .. "]")
   Server:remove_player()
 end
 
@@ -125,8 +125,9 @@ end
 function SessionManager:timeout_players()
   for key, value in pairs(self.players) do
     if self:get_diff(value.last_ping) > 5 then
-      Log:info("player: " .. value.name .. " has ben disconnected! [timeout]")
-      self:remove_player(value.client_id)
+      --print("player: " .. value.name .. " has ben disconnected! [timeout]")
+      self:remove_player(value.id, "timeout")
+      return
     end
   end
 end
@@ -134,8 +135,9 @@ end
 function SessionManager:run()
   local co = coroutine.create(function ()
     while true do
-      self:receive_packets()
       self:timeout_players()
+      self:receive_packets()
+      --self:timeout_players()
       coroutine.yield()
     end
   end)
